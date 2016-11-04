@@ -2,16 +2,15 @@
 from resource_management import *
 from resource_management.libraries.script.script import Script
 import sys, os, glob
-from resource_management.libraries.functions.version import format_stack_version
 from resource_management.libraries.functions.default import default
 
 
-    
+
 # server configurations
 config = Script.get_config()
 
- 
-    
+
+
 # params from flink-ambari-config
 flink_install_dir = config['configurations']['flink-ambari-config']['flink_install_dir']
 flink_numcontainers = config['configurations']['flink-ambari-config']['flink_numcontainers']
@@ -24,7 +23,7 @@ flink_streaming = config['configurations']['flink-ambari-config']['flink_streami
 
 hadoop_conf_dir = config['configurations']['flink-ambari-config']['hadoop_conf_dir']
 flink_download_url = config['configurations']['flink-ambari-config']['flink_download_url']
- 
+
 
 conf_dir=''
 bin_dir=''
