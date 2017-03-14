@@ -21,9 +21,9 @@ class Master(Script):
             
     Directory([status_params.flink_pid_dir, params.flink_log_dir, params.flink_install_dir],
             owner=params.flink_user,
-            group=params.flink_group,
-            mode=0775,
-            create_parents = True
+            group=params.flink_group
+           # mode=0775,
+            #create_parents = True
 
     )   
 
@@ -105,12 +105,16 @@ class Master(Script):
     
     self.create_hdfs_user(params.flink_user)
 
-    Execute('echo bin dir ' + params.bin_dir)        
+    Execute('mkdir -p ' + status_params.flink_pid_dir)
+    Execute('echo bin dir ' + params.bin_dir)
     Execute('echo pid file ' + status_params.flink_pid_file)
-    cmd = format("export HADOOP_CONF_DIR={hadoop_conf_dir}; {bin_dir}/yarn-session.sh -n {flink_numcontainers} -jm {flink_jobmanager_memory} -tm {flink_container_memory} -qu {flink_queue} -nm {flink_appname} -d")
+    cmd = format("export HADOOP_CONF_DIR={hadoop_conf_dir}; {bin_dir}/yarn-session.sh -n {flink_numcontainers} -jm {flink_jobmanager_memory} -tm {flink_container_memory} -qu {flink_queue} -nm {flink_appname} -s 2 -d")
     if params.flink_streaming:
       cmd = cmd + ' -st '
     Execute (cmd + format(" >> {flink_log_file}"), user=params.flink_user)
+
+    Execute('chown -R ' + params.flink_user + ':' + params.flink_group + ' ' + status_params.flink_pid_dir)
+
     Execute("yarn application -list 2>/dev/null | awk '/" + params.flink_appname + "/ {print $1}' | head -n1 > " + status_params.flink_pid_file, user=params.flink_user)
     #Execute('chown '+params.flink_user+':'+params.flink_group+' ' + status_params.flink_pid_file)
 
@@ -163,4 +167,4 @@ class Master(Script):
     Execute('hadoop fs -chgrp ' + user + ' /user/'+user, user='hdfs')
           
 if __name__ == "__main__":
-  Master().execute()
+Master().execute()
